@@ -64,7 +64,9 @@ html, body {
 
   // language selector for mobile devices
   .lang-selector {
-    display: none;
+    @if $examples-width != 0 {
+      display: none;
+    }
     a {
       padding-top: 0.5em;
       padding-bottom: 0.5em;
@@ -519,10 +521,12 @@ html, body {
     color: #fff;
 
     margin: 0;
-    width: $examples-width;
+    @if $examples-width != 0 {
+      width: $examples-width;
 
-    float:right;
-    clear:right;
+      float:right;
+      clear:right;
+    }
 
     box-sizing: border-box;
 
