@@ -5,7 +5,7 @@
  * @license
  */
 
-(function(){
+(function () {
 
   /**
    * Convenience function for instantiating a new lunr index and configuring it
@@ -46,9 +46,9 @@
     var idx = new lunr.Index
 
     idx.pipeline.add(
-        lunr.trimmer,
-        lunr.stopWordFilter,
-        lunr.stemmer
+      lunr.trimmer,
+      lunr.stopWordFilter,
+      lunr.stemmer
     )
 
     if (config) config.call(idx, idx)
@@ -106,10 +106,10 @@
    */
   lunr.EventEmitter.prototype.addListener = function () {
     var args = Array.prototype.slice.call(arguments),
-        fn = args.pop(),
-        names = args
+      fn = args.pop(),
+      names = args
 
-    if (typeof fn !== "function") throw new TypeError ("last argument must be a function")
+    if (typeof fn !== "function") throw new TypeError("last argument must be a function")
 
     names.forEach(function (name) {
       if (!this.hasHandler(name)) this.events[name] = []
@@ -188,15 +188,12 @@
         break
       }
     }
-
     return str
-        .split(/(?:\s+|\-)/)
-        .filter(function (token) {
-          return !!token
-        })
-        .map(function (token) {
-          return token.toLowerCase()
-        })
+      .split(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\uFE30-\uFFA0|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]+/)
+      .map(function (token) {
+        var t = token.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\uFE30-\uFFA0|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g, '').toLowerCase()
+        return t;
+      });
   }
   /*!
    * lunr.Pipeline
@@ -295,7 +292,7 @@
       if (fn) {
         pipeline.add(fn)
       } else {
-        throw new Error ('Cannot load un-registered function: ' + fnName)
+        throw new Error('Cannot load un-registered function: ' + fnName)
       }
     })
 
@@ -374,8 +371,8 @@
    */
   lunr.Pipeline.prototype.run = function (tokens) {
     var out = [],
-        tokenLength = tokens.length,
-        stackLength = this._stack.length
+      tokenLength = tokens.length,
+      stackLength = this._stack.length
 
     for (var i = 0; i < tokenLength; i++) {
       var token = tokens[i]
@@ -460,23 +457,23 @@
     var list = this.list
 
     if (!list) {
-      this.list = new lunr.Vector.Node (idx, val, list)
+      this.list = new lunr.Vector.Node(idx, val, list)
       return this.length++
     }
 
     var prev = list,
-        next = list.next
+      next = list.next
 
     while (next != undefined) {
       if (idx < next.idx) {
-        prev.next = new lunr.Vector.Node (idx, val, next)
+        prev.next = new lunr.Vector.Node(idx, val, next)
         return this.length++
       }
 
       prev = next, next = next.next
     }
 
-    prev.next = new lunr.Vector.Node (idx, val, next)
+    prev.next = new lunr.Vector.Node(idx, val, next)
     return this.length++
   }
 
@@ -489,8 +486,8 @@
   lunr.Vector.prototype.magnitude = function () {
     if (this._magniture) return this._magnitude
     var node = this.list,
-        sumOfSquares = 0,
-        val
+      sumOfSquares = 0,
+      val
 
     while (node) {
       val = node.val
@@ -510,8 +507,8 @@
    */
   lunr.Vector.prototype.dot = function (otherVector) {
     var node = this.list,
-        otherNode = otherVector.list,
-        dotProduct = 0
+      otherNode = otherVector.list,
+      dotProduct = 0
 
     while (node && otherNode) {
       if (node.idx < otherNode.idx) {
@@ -644,10 +641,10 @@
    */
   lunr.SortedSet.prototype.indexOf = function (elem, start, end) {
     var start = start || 0,
-        end = end || this.elements.length,
-        sectionLength = end - start,
-        pivot = start + Math.floor(sectionLength / 2),
-        pivotElem = this.elements[pivot]
+      end = end || this.elements.length,
+      sectionLength = end - start,
+      pivot = start + Math.floor(sectionLength / 2),
+      pivotElem = this.elements[pivot]
 
     if (sectionLength <= 1) {
       if (pivotElem === elem) {
@@ -679,10 +676,10 @@
    */
   lunr.SortedSet.prototype.locationFor = function (elem, start, end) {
     var start = start || 0,
-        end = end || this.elements.length,
-        sectionLength = end - start,
-        pivot = start + Math.floor(sectionLength / 2),
-        pivotElem = this.elements[pivot]
+      end = end || this.elements.length,
+      sectionLength = end - start,
+      pivot = start + Math.floor(sectionLength / 2),
+      pivotElem = this.elements[pivot]
 
     if (sectionLength <= 1) {
       if (pivotElem > elem) return pivot
@@ -703,16 +700,16 @@
    */
   lunr.SortedSet.prototype.intersect = function (otherSet) {
     var intersectSet = new lunr.SortedSet,
-        i = 0, j = 0,
-        a_len = this.length, b_len = otherSet.length,
-        a = this.elements, b = otherSet.elements
+      i = 0, j = 0,
+      a_len = this.length, b_len = otherSet.length,
+      a = this.elements, b = otherSet.elements
 
     while (true) {
       if (i > a_len - 1 || j > b_len - 1) break
 
       if (a[i] === b[j]) {
         intersectSet.add(a[i])
-        i++, j++
+        i++ , j++
         continue
       }
 
@@ -797,7 +794,7 @@
     this.documentStore = new lunr.Store
     this.tokenStore = new lunr.TokenStore
     this.corpusTokens = new lunr.SortedSet
-    this.eventEmitter =  new lunr.EventEmitter
+    this.eventEmitter = new lunr.EventEmitter
 
     this._idfCache = {}
 
@@ -879,7 +876,7 @@
    */
   lunr.Index.prototype.field = function (fieldName, opts) {
     var opts = opts || {},
-        field = { name: fieldName, boost: opts.boost || 1 }
+      field = { name: fieldName, boost: opts.boost || 1 }
 
     this._fields.push(field)
     return this
@@ -920,9 +917,9 @@
    */
   lunr.Index.prototype.add = function (doc, emitEvent) {
     var docTokens = {},
-        allDocumentTokens = new lunr.SortedSet,
-        docRef = doc[this._ref],
-        emitEvent = emitEvent === undefined ? true : emitEvent
+      allDocumentTokens = new lunr.SortedSet,
+      docRef = doc[this._ref],
+      emitEvent = emitEvent === undefined ? true : emitEvent
 
     this._fields.forEach(function (field) {
       var fieldTokens = this.pipeline.run(lunr.tokenizer(doc[field.name]))
@@ -972,7 +969,7 @@
    */
   lunr.Index.prototype.remove = function (doc, emitEvent) {
     var docRef = doc[this._ref],
-        emitEvent = emitEvent === undefined ? true : emitEvent
+      emitEvent = emitEvent === undefined ? true : emitEvent
 
     if (!this.documentStore.has(docRef)) return
 
@@ -1029,7 +1026,7 @@
     if (Object.prototype.hasOwnProperty.call(this._idfCache, cacheKey)) return this._idfCache[cacheKey]
 
     var documentFrequency = this.tokenStore.count(term),
-        idf = 1
+      idf = 1
 
     if (documentFrequency > 0) {
       idf = 1 + Math.log(this.tokenStore.length / documentFrequency)
@@ -1064,9 +1061,9 @@
    */
   lunr.Index.prototype.search = function (query) {
     var queryTokens = this.pipeline.run(lunr.tokenizer(query)),
-        queryVector = new lunr.Vector,
-        documentSets = [],
-        fieldBoosts = this._fields.reduce(function (memo, f) { return memo + f.boost }, 0)
+      queryVector = new lunr.Vector,
+      documentSets = [],
+      fieldBoosts = this._fields.reduce(function (memo, f) { return memo + f.boost }, 0)
 
     var hasSomeToken = queryTokens.some(function (token) {
       return this.tokenStore.has(token)
@@ -1075,49 +1072,49 @@
     if (!hasSomeToken) return []
 
     queryTokens
-        .forEach(function (token, i, tokens) {
-          var tf = 1 / tokens.length * this._fields.length * fieldBoosts,
-              self = this
+      .forEach(function (token, i, tokens) {
+        var tf = 1 / tokens.length * this._fields.length * fieldBoosts,
+          self = this
 
-          var set = this.tokenStore.expand(token).reduce(function (memo, key) {
-            var pos = self.corpusTokens.indexOf(key),
-                idf = self.idf(key),
-                similarityBoost = 1,
-                set = new lunr.SortedSet
+        var set = this.tokenStore.expand(token).reduce(function (memo, key) {
+          var pos = self.corpusTokens.indexOf(key),
+            idf = self.idf(key),
+            similarityBoost = 1,
+            set = new lunr.SortedSet
 
-            // if the expanded key is not an exact match to the token then
-            // penalise the score for this key by how different the key is
-            // to the token.
-            if (key !== token) {
-              var diff = Math.max(3, key.length - token.length)
-              similarityBoost = 1 / Math.log(diff)
-            }
+          // if the expanded key is not an exact match to the token then
+          // penalise the score for this key by how different the key is
+          // to the token.
+          if (key !== token) {
+            var diff = Math.max(3, key.length - token.length)
+            similarityBoost = 1 / Math.log(diff)
+          }
 
-            // calculate the query tf-idf score for this token
-            // applying an similarityBoost to ensure exact matches
-            // these rank higher than expanded terms
-            if (pos > -1) queryVector.insert(pos, tf * idf * similarityBoost)
+          // calculate the query tf-idf score for this token
+          // applying an similarityBoost to ensure exact matches
+          // these rank higher than expanded terms
+          if (pos > -1) queryVector.insert(pos, tf * idf * similarityBoost)
 
-            // add all the documents that have this key into a set
-            Object.keys(self.tokenStore.get(key)).forEach(function (ref) { set.add(ref) })
+          // add all the documents that have this key into a set
+          Object.keys(self.tokenStore.get(key)).forEach(function (ref) { set.add(ref) })
 
-            return memo.union(set)
-          }, new lunr.SortedSet)
+          return memo.union(set)
+        }, new lunr.SortedSet)
 
-          documentSets.push(set)
-        }, this)
+        documentSets.push(set)
+      }, this)
 
     var documentSet = documentSets.reduce(function (memo, set) {
       return memo.intersect(set)
     })
 
     return documentSet
-        .map(function (ref) {
-          return { ref: ref, score: queryVector.similarity(this.documentVector(ref)) }
-        }, this)
-        .sort(function (a, b) {
-          return b.score - a.score
-        })
+      .map(function (ref) {
+        return { ref: ref, score: queryVector.similarity(this.documentVector(ref)) }
+      }, this)
+      .sort(function (a, b) {
+        return b.score - a.score
+      })
   }
 
   /**
@@ -1136,13 +1133,13 @@
    */
   lunr.Index.prototype.documentVector = function (documentRef) {
     var documentTokens = this.documentStore.get(documentRef),
-        documentTokensLength = documentTokens.length,
-        documentVector = new lunr.Vector
+      documentTokensLength = documentTokens.length,
+      documentVector = new lunr.Vector
 
     for (var i = 0; i < documentTokensLength; i++) {
       var token = documentTokens.elements[i],
-          tf = this.tokenStore.get(token)[documentRef].tf,
-          idf = this.idf(token)
+        tf = this.tokenStore.get(token)[documentRef].tf,
+        idf = this.idf(token)
 
       documentVector.insert(this.corpusTokens.indexOf(token), tf * idf)
     };
@@ -1310,50 +1307,50 @@
    * @returns {String}
    * @see lunr.Pipeline
    */
-  lunr.stemmer = (function(){
+  lunr.stemmer = (function () {
     var step2list = {
-          "ational" : "ate",
-          "tional" : "tion",
-          "enci" : "ence",
-          "anci" : "ance",
-          "izer" : "ize",
-          "bli" : "ble",
-          "alli" : "al",
-          "entli" : "ent",
-          "eli" : "e",
-          "ousli" : "ous",
-          "ization" : "ize",
-          "ation" : "ate",
-          "ator" : "ate",
-          "alism" : "al",
-          "iveness" : "ive",
-          "fulness" : "ful",
-          "ousness" : "ous",
-          "aliti" : "al",
-          "iviti" : "ive",
-          "biliti" : "ble",
-          "logi" : "log"
-        },
+      "ational": "ate",
+      "tional": "tion",
+      "enci": "ence",
+      "anci": "ance",
+      "izer": "ize",
+      "bli": "ble",
+      "alli": "al",
+      "entli": "ent",
+      "eli": "e",
+      "ousli": "ous",
+      "ization": "ize",
+      "ation": "ate",
+      "ator": "ate",
+      "alism": "al",
+      "iveness": "ive",
+      "fulness": "ful",
+      "ousness": "ous",
+      "aliti": "al",
+      "iviti": "ive",
+      "biliti": "ble",
+      "logi": "log"
+    },
 
-        step3list = {
-          "icate" : "ic",
-          "ative" : "",
-          "alize" : "al",
-          "iciti" : "ic",
-          "ical" : "ic",
-          "ful" : "",
-          "ness" : ""
-        },
+      step3list = {
+        "icate": "ic",
+        "ative": "",
+        "alize": "al",
+        "iciti": "ic",
+        "ical": "ic",
+        "ful": "",
+        "ness": ""
+      },
 
-        c = "[^aeiou]",          // consonant
-        v = "[aeiouy]",          // vowel
-        C = c + "[^aeiouy]*",    // consonant sequence
-        V = v + "[aeiou]*",      // vowel sequence
+      c = "[^aeiou]",          // consonant
+      v = "[aeiouy]",          // vowel
+      C = c + "[^aeiouy]*",    // consonant sequence
+      V = v + "[aeiou]*",      // vowel sequence
 
-        mgr0 = "^(" + C + ")?" + V + C,               // [C]VC... is m>0
-        meq1 = "^(" + C + ")?" + V + C + "(" + V + ")?$",  // [C]VC[V] is m=1
-        mgr1 = "^(" + C + ")?" + V + C + V + C,       // [C]VCVC... is m>1
-        s_v = "^(" + C + ")?" + v;                   // vowel in stem
+      mgr0 = "^(" + C + ")?" + V + C,               // [C]VC... is m>0
+      meq1 = "^(" + C + ")?" + V + C + "(" + V + ")?$",  // [C]VC[V] is m=1
+      mgr1 = "^(" + C + ")?" + V + C + V + C,       // [C]VCVC... is m>1
+      s_v = "^(" + C + ")?" + v;                   // vowel in stem
 
     var re_mgr0 = new RegExp(mgr0);
     var re_mgr1 = new RegExp(mgr1);
@@ -1382,17 +1379,17 @@
     var re3_5 = new RegExp("^" + C + v + "[^aeiouwxy]$");
 
     var porterStemmer = function porterStemmer(w) {
-      var   stem,
-          suffix,
-          firstch,
-          re,
-          re2,
-          re3,
-          re4;
+      var stem,
+        suffix,
+        firstch,
+        re,
+        re2,
+        re3,
+        re4;
 
       if (w.length < 3) { return w; }
 
-      firstch = w.substr(0,1);
+      firstch = w.substr(0, 1);
       if (firstch == "y") {
         w = firstch.toUpperCase() + w.substr(1);
       }
@@ -1401,8 +1398,8 @@
       re = re_1a
       re2 = re2_1a;
 
-      if (re.test(w)) { w = w.replace(re,"$1$2"); }
-      else if (re2.test(w)) { w = w.replace(re2,"$1$2"); }
+      if (re.test(w)) { w = w.replace(re, "$1$2"); }
+      else if (re2.test(w)) { w = w.replace(re2, "$1$2"); }
 
       // Step 1b
       re = re_1b;
@@ -1412,7 +1409,7 @@
         re = re_mgr0;
         if (re.test(fp[1])) {
           re = re_1b_2;
-          w = w.replace(re,"");
+          w = w.replace(re, "");
         }
       } else if (re2.test(w)) {
         var fp = re2.exec(w);
@@ -1423,8 +1420,8 @@
           re2 = re2_1b_2;
           re3 = re3_1b_2;
           re4 = re4_1b_2;
-          if (re2.test(w)) {  w = w + "e"; }
-          else if (re3.test(w)) { re = re_1b_2; w = w.replace(re,""); }
+          if (re2.test(w)) { w = w + "e"; }
+          else if (re3.test(w)) { re = re_1b_2; w = w.replace(re, ""); }
           else if (re4.test(w)) { w = w + "e"; }
         }
       }
@@ -1497,7 +1494,7 @@
       re2 = re_mgr1;
       if (re.test(w) && re2.test(w)) {
         re = re_1b_2;
-        w = w.replace(re,"");
+        w = w.replace(re, "");
       }
 
       // and turn initial Y back to y
@@ -1680,9 +1677,20 @@
    * @see lunr.Pipeline
    */
   lunr.trimmer = function (token) {
+    if (isChineseChar(token)) {
+      return token;
+    }
     return token
-        .replace(/^\W+/, '')
-        .replace(/\W+$/, '')
+      .replace(/^\W+/, '')
+      .replace(/\W+$/, '')
+  }
+
+  /**
+   **check it contains Chinese (including Japanese and Korean)
+   */
+  function isChineseChar(str) {
+    var reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+    return reg.test(str);
   }
 
   lunr.Pipeline.registerFunction(lunr.trimmer, 'trimmer')
@@ -1734,10 +1742,10 @@
    */
   lunr.TokenStore.prototype.add = function (token, doc, root) {
     var root = root || this.root,
-        key = token[0],
-        rest = token.slice(1)
+      key = token[0],
+      rest = token.slice(1)
 
-    if (!(key in root)) root[key] = {docs: {}}
+    if (!(key in root)) root[key] = { docs: {} }
 
     if (rest.length === 0) {
       root[key].docs[doc.ref] = doc
@@ -1851,17 +1859,17 @@
    */
   lunr.TokenStore.prototype.expand = function (token, memo) {
     var root = this.getNode(token),
-        docs = root.docs || {},
-        memo = memo || []
+      docs = root.docs || {},
+      memo = memo || []
 
     if (Object.keys(docs).length) memo.push(token)
 
     Object.keys(root)
-        .forEach(function (key) {
-          if (key === 'docs') return
+      .forEach(function (key) {
+        if (key === 'docs') return
 
-          memo.concat(this.expand(token + key, memo))
-        }, this)
+        memo.concat(this.expand(token + key, memo))
+      }, this)
 
     return memo
   }
@@ -1880,31 +1888,31 @@
   }
 
 
-  /**
-   * export the module via AMD, CommonJS or as a browser global
-   * Export code from https://github.com/umdjs/umd/blob/master/returnExports.js
-   */
-  ;(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-      // AMD. Register as an anonymous module.
-      define(factory)
-    } else if (typeof exports === 'object') {
-      /**
-       * Node. Does not work with strict CommonJS, but
-       * only CommonJS-like enviroments that support module.exports,
-       * like Node.
-       */
-      module.exports = factory()
-    } else {
-      // Browser globals (root is window)
-      root.lunr = factory()
-    }
-  }(this, function () {
     /**
-     * Just return a value to define the module export.
-     * This example returns an object, but the module
-     * can return a function as the exported value.
+     * export the module via AMD, CommonJS or as a browser global
+     * Export code from https://github.com/umdjs/umd/blob/master/returnExports.js
      */
-    return lunr
-  }))
+    ; (function (root, factory) {
+      if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(factory)
+      } else if (typeof exports === 'object') {
+        /**
+         * Node. Does not work with strict CommonJS, but
+         * only CommonJS-like enviroments that support module.exports,
+         * like Node.
+         */
+        module.exports = factory()
+      } else {
+        // Browser globals (root is window)
+        root.lunr = factory()
+      }
+    }(this, function () {
+      /**
+       * Just return a value to define the module export.
+       * This example returns an object, but the module
+       * can return a function as the exported value.
+       */
+      return lunr
+    }))
 })()
