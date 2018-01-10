@@ -36,6 +36,12 @@ body {
   display: block;
 }
 
+.toc-wrapper {
+  &.toc-list-h2, &.toc-list-h2, &.toc-list-h2 {
+    display: block !important;
+  }
+}
+
 .content {
   font-size: 12px;
 
