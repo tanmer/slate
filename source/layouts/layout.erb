@@ -43,7 +43,7 @@ under the License.
     <% end %>
   </head>
 
-  <body class="<%= page_classes %>" data-languages="<%=h language_tabs.map{ |lang| lang.is_a?(Hash) ? lang.keys.first : lang }.to_json %>">
+  <body class="<%= page_classes %> <%= 'inline-code' if current_page.data.inline_code %>" data-languages="<%=h language_tabs.map{ |lang| lang.is_a?(Hash) ? lang.keys.first : lang }.to_json %>">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -94,10 +94,10 @@ under the License.
       <% end %>
     </div>
     <div class="page-wrapper">
-      <div class="dark-box"></div>
       <div class="content">
         <%= page_content %>
       </div>
+      <% unless current_page.data.inline_code %>
       <div class="dark-box">
         <% if language_tabs.any? %>
           <div class="lang-selector">
@@ -111,6 +111,7 @@ under the License.
           </div>
         <% end %>
       </div>
+      <% end %>
     </div>
   </body>
 </html>

@@ -64,9 +64,7 @@ html, body {
 
   // language selector for mobile devices
   .lang-selector {
-    @if $examples-width != 0 {
-      display: none;
-    }
+    display: none;
     a {
       padding-top: 0.5em;
       padding-bottom: 0.5em;
@@ -521,12 +519,10 @@ html, body {
     color: #fff;
 
     margin: 0;
-    @if $examples-width != 0 {
-      width: $examples-width;
+    width: $examples-width;
 
-      float:right;
-      clear:right;
-    }
+    float:right;
+    clear:right;
 
     box-sizing: border-box;
 
@@ -553,6 +549,35 @@ html, body {
       background-color: $code-annotation-bg;
       padding: $code-annotation-padding 2em;
       color: #eee;
+    }
+  }
+}
+
+body.inline-code {
+  .toc-wrapper {
+    .lang-selector {
+      display: block;
+    }
+  }
+
+  .page-wrapper {
+    .dark-box {
+      width: 0;
+    }
+    .content {
+      &>h1, &>h2, &>h3, &>h4, &>h5, &>h6, &>p, &>table, &>ul, &>ol, &>aside, &>dl {
+        margin-right: unset;
+        // width: 100%;
+      }
+      pre, blockquote {
+        background-color: $code-bg;
+        color: #fff;
+        width: 100%;
+        margin: 0;
+        width: unset;
+        float: unset;
+        clear: unset;
+      }
     }
   }
 }
